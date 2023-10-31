@@ -1,12 +1,11 @@
-from os import path
 from app import App
 import tkinter as tk
+from apath import get_asset_path
 
 def main():
-    assets_dir = path.abspath(path.join(path.dirname(__file__), "../assets"))
-    map_path = path.join(assets_dir, "map.png")
-
-    graph_nodes_path = path.join(assets_dir, "graph.txt")
+    map_path = get_asset_path("map.png")
+    graph_nodes_path = get_asset_path("graph.txt")
+    
     point_list = []
 
     def on_mouse_pressed(event: tk.Event, canvas: tk.Canvas):

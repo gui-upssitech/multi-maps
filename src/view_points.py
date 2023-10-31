@@ -1,13 +1,12 @@
-from os import path
+from apath import get_asset_path
 from app import App
 import tkinter as tk
 
 def main():
-    assets_dir = path.abspath(path.join(path.dirname(__file__), "../assets"))
-    map_path = path.join(assets_dir, "map.png")
+    map_path = get_asset_path("map.png")
+    graph_nodes_path = get_asset_path("city.graph")
 
     # Load the graph data
-    graph_nodes_path = path.join(assets_dir, "city.graph")
     with open(graph_nodes_path, "r") as f:
         nodes_str, edges_str = [s.strip().split("\n") for s in f.read().split("\n\n")]
         
