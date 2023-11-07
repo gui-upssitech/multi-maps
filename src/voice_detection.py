@@ -7,7 +7,7 @@ with sr.Microphone() as source:
     audio = r.listen(source)   
 
 try:
-    print("Interpreted as: " + r.recognize_google(audio))
+    print("Interpreted as: " + r.recognize_google(audio, language="fr-FR"))
 except sr.UnknownValueError:
     print("Apologies, the audio wasn't clear enough.")
 except sr.RequestError as e:
