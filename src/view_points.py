@@ -14,7 +14,7 @@ def main():
         graph_edges = [tuple(map(int, line.split())) for line in edges_str if line != ""]
         print(graph_edges)
 
-    app = App("Map", 500, map_path)
+    app = App("Map", 500, map_path, graph_nodes_path)
 
     def fit_coords(x: float, y: float):
         return (int(x * app.root.winfo_width()), int(y * app.root.winfo_height()))
