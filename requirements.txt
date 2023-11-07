@@ -11,3 +11,5 @@ pyparsing==3.1.1
 python-dateutil==2.8.2
 six==1.16.0
 SpeechRecognition==3.10.0
+# faire sudo apt install portaudio19-dev si l'installation de pyaudio ne fonctionne pas
+PyAudio==0.2.14
