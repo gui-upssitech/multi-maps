@@ -1,4 +1,5 @@
 import tkinter as tk
+import network
 from PIL import Image, ImageTk
 
 class App:
@@ -17,7 +18,6 @@ class App:
 
         self.set_map_as_bg(path_to_map)
         self.add_text_boxes()
-
 
     def add_text_boxes(self):
         # Add two input boxes that can be used to enter the start and end node
@@ -59,6 +59,8 @@ class App:
         self.root.start_input = create_input("Start node", (10, 10), lambda x: on_change("start_node", x))
         self.root.end_input = create_input("End node", (10, 40), lambda x: on_change("end_node", x))
 
+    def create_graph(self):
+        self.graph = network.create_graph(self.path_to_graph, self.root.winfo_width())
 
     def set_map_as_bg(self, path_to_map: str):
         self.root.update_idletasks()
@@ -81,6 +83,9 @@ class App:
             self.mouse_y = y - 45 # Account for the title bar
 
         self.pointer.on_update(on_update)
+
+    def set_vocal(self, vocal):
+        self.vocal = vocal
 
     def run(self):
         #self.pointer.start(self.root.title())
