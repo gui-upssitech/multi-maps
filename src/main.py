@@ -9,7 +9,6 @@ pointer = MousePointer()
 vocal = Vocal()
 
 app = App(title, 600, get_asset_path("map.png"), get_asset_path("city.graph"))
-app.create_graph()
 app.set_pointer(pointer)
 app.set_vocal(vocal)
 

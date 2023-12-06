@@ -18,6 +18,8 @@ def create_graph(path_to_graph, window_size):
     graph.add_nodes_from(graph_nodes)
     graph.add_edges_from(graph_edges)
 
+    graph.compute_shortest_path = lambda start, end: nx.astar_path(graph, start, end)
+
     return graph
 
 if __name__ == "__main__":

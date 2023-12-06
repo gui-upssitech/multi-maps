@@ -1,8 +1,14 @@
 import tkinter as tk
 import network
 from PIL import Image, ImageTk
+from dataclasses import dataclass
 
 class App:
+
+    @dataclass
+    class Node:
+        id: int
+        handle: int
 
     root: tk.Tk
     canvas: tk.Canvas
@@ -17,6 +23,10 @@ class App:
         self.canvas.pack()
 
         self.set_map_as_bg(path_to_map)
+        self.graph = network.create_graph(path_to_graph, size)
+
+        self.start_node: self.Node = None
+        self.end_node: self.Node = None
         self.add_text_boxes()
 
     def add_text_boxes(self):
@@ -49,20 +59,36 @@ class App:
 
             return sv
 
-        self.start_node = None
-        self.end_node = None
-        
-        def on_change(var_name, x):
-            setattr(self, var_name, x)
-            print(f"{self.start_node=} {self.end_node=}")
+        self.root.start_input = create_input("Start node", (10, 10), lambda x: self.on_change("start_node", x))
+        self.root.end_input = create_input("End node", (10, 40), lambda x: self.on_change("end_node", x))
 
-        self.root.start_input = create_input("Start node", (10, 10), lambda x: on_change("start_node", x))
-        self.root.end_input = create_input("End node", (10, 40), lambda x: on_change("end_node", x))
+    def on_change(self, var_name, id):
+        cur_node: self.Node = getattr(self, var_name)
+        if cur_node is not None:
+            self.canvas.delete(cur_node.handle)
 
-    def create_graph(self):
-        self.graph = network.create_graph(self.path_to_graph, self.root.winfo_width())
+        if id is None or not self.graph.has_node(id):
+            setattr(self, var_name, None)
+            return
+
+        x, y = self.graph.nodes[id]["pos"]
+        r = 10
+
+        handle = self.canvas.create_oval(x - r, y - r, x + r, y + r, fill="red")
+        setattr(self, var_name, self.Node(id, handle))            
+
+        print(f"{self.start_node=} {self.end_node=}")
+        if self.start_node is not None and self.end_node is not None:
+            path = self.graph.compute_shortest_path(self.start_node.id, self.end_node.id)
+            for i in range(len(path) - 1):
+                x1, y1 = self.graph.nodes[path[i]]["pos"]
+                x2, y2 = self.graph.nodes[path[i + 1]]["pos"]
+
+                self.canvas.create_line(x1, y1, x2, y2, fill="red", width=4)
+
 
     def set_map_as_bg(self, path_to_map: str):
+        """Sets the map as the background of the canvas"""
         self.root.update_idletasks()
 
         image = Image.open(path_to_map)
@@ -72,8 +98,7 @@ class App:
         self.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
         self.canvas.image = tk_image
 
-    def on_click(self, callback):
-        self.root.bind("<Button-1>", lambda e: callback(e, self.canvas))
+
 
     def set_pointer(self, pointer):
         self.pointer = pointer
@@ -86,6 +111,8 @@ class App:
 
     def set_vocal(self, vocal):
         self.vocal = vocal
+
+
 
     def run(self):
         #self.pointer.start(self.root.title())
