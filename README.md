@@ -64,3 +64,15 @@ Voice input : I want to go to the bus station
 Voice input : I want to go to Home
 ```
 ![Alt text](assets/example_home.png)
+
+## How it works
+
+The software leverages the multi-modality to enhance the user experience and allows for multiple ways of interacting with the machine for more flexibility.
+
+The mouse click followed by the vocal command makes it so the user can ask for a destination event if he does not know where it is located. Furthermore, we thought about swapping the mouse click with an eye tracker to make our app usable by people who are not capable of efficiently using a mouse and keyboard.
+
+**Interaction timeline**
+```
+-------|click|---------------------------------------------
+-------------|voice command                   |------------
+```
