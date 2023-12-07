@@ -2,6 +2,7 @@ import tkinter as tk
 import network
 from PIL import Image, ImageTk
 from dataclasses import dataclass
+from modal.vocal import Vocal
 
 class App:
 
@@ -27,45 +28,33 @@ class App:
 
         self.start_node: self.Node = None
         self.end_node: self.Node = None
-        self.add_text_boxes()
+        self.lines = []
 
-    def add_text_boxes(self):
-        # Add two input boxes that can be used to enter the start and end node
+        self.configure_click()
 
-        # Function that creates a frame containing a label and an entry box
-        # The content should be aligned horizontally
-        # The function returns the entry box
-        def create_input(label_text, pose: tuple[int, int], callback=lambda x: None):
-            frame = tk.Frame(self.root)
 
-            label = tk.Label(frame, text=label_text)
-            label.pack(side=tk.LEFT, padx=2)
 
-            sv = tk.StringVar()
+    def set_map_as_bg(self, path_to_map: str):
+        """Sets the map as the background of the canvas"""
+        self.root.update_idletasks()
 
-            def on_change(var, index, mode):
-                try:
-                    callback(int(sv.get()))
-                except ValueError:
-                    callback(None)
+        image = Image.open(path_to_map)
+        image = image.resize((self.root.winfo_width(), self.root.winfo_height()), Image.LANCZOS)
+        tk_image = ImageTk.PhotoImage(image)
+        
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
+        self.canvas.image = tk_image
 
-            sv.trace("w", on_change)
 
-            entry = tk.Entry(frame, textvariable=sv)
-            entry.pack(side=tk.RIGHT, padx=2)
 
-            frame.pack()
-            frame.place(x=pose[0], y=pose[1])
-
-            return sv
-
-        self.root.start_input = create_input("Start node", (10, 10), lambda x: self.on_change("start_node", x))
-        self.root.end_input = create_input("End node", (10, 40), lambda x: self.on_change("end_node", x))
-
-    def on_change(self, var_name, id):
+    def update(self, var_name, id):
         cur_node: self.Node = getattr(self, var_name)
         if cur_node is not None:
             self.canvas.delete(cur_node.handle)
+
+        for line_handle in self.lines:
+            self.canvas.delete(line_handle)
+        self.lines = []
 
         if id is None or not self.graph.has_node(id):
             setattr(self, var_name, None)
@@ -84,44 +73,40 @@ class App:
                 x1, y1 = self.graph.nodes[path[i]]["pos"]
                 x2, y2 = self.graph.nodes[path[i + 1]]["pos"]
 
-                self.canvas.create_line(x1, y1, x2, y2, fill="red", width=4)
-
-
-    def set_map_as_bg(self, path_to_map: str):
-        """Sets the map as the background of the canvas"""
-        self.root.update_idletasks()
-
-        image = Image.open(path_to_map)
-        image = image.resize((self.root.winfo_width(), self.root.winfo_height()), Image.LANCZOS)
-        tk_image = ImageTk.PhotoImage(image)
-        
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
-        self.canvas.image = tk_image
+                self.lines.append(self.canvas.create_line(x1, y1, x2, y2, fill="red", width=4))
 
 
 
-    def set_pointer(self, pointer):
-        self.pointer = pointer
+    def configure_click(self):
+        def on_click(event):
+            x, y = event.x, event.y
+            self.update("end_node", None)
 
-        def on_update(x, y):
-            self.mouse_x = x - 11 # Account for the border
-            self.mouse_y = y - 45 # Account for the title bar
+            # Find the closest node to the click
+            closest_node = None
+            closest_dist = float("inf")
+            for node in self.graph.nodes:
+                node_x, node_y = self.graph.nodes[node]["pos"]
+                dist = (node_x - x) ** 2 + (node_y - y) ** 2
+                if dist < closest_dist:
+                    closest_node = node
+                    closest_dist = dist
 
-        self.pointer.on_update(on_update)
+            self.update("start_node", closest_node)
+            id = self.vocal.interpret(self.vocal.listen())
+            if id is not None:
+                self.update("end_node", id)
+
+        self.canvas.bind("<Button-1>", on_click)
+        self.canvas.bind("<Button-3>", lambda e: self.update("start_node", None))
+
 
     def set_vocal(self, vocal):
-        self.vocal = vocal
+        self.vocal: Vocal = vocal
 
 
 
     def run(self):
-        #self.pointer.start(self.root.title())
-
         self.root.mainloop()
-
-        #self.pointer.stop()
-
-
-# ============================================================
 
 
