@@ -7,18 +7,19 @@ class Vocal:
 
     def listen(self) -> str:
         with self.microphone as source:
-            print("Ecoute de la commande...")
+            print("Where do you wish to go ?")
+            print("Waiting for your answer...")
             audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
 
         try:
             text = self.recognizer.recognize_google(audio, language="en-EN")
-            print("G konpri: " + text)
+            print("I understood: " + text)
             return text
         except sr.UnknownValueError:
-            print("G ri un konpri")
+            print("I did not understand")
             return None
         except sr.RequestError as e:
-            print("G buggé. Erreur : ".format(e))
+            print("Error: ".format(e))
             return None
 
     def interpret(self, text: str) -> int:
