@@ -9,10 +9,11 @@ The app shows a mapof a city with multiple points of interest (POI). The user ca
 
 ## Installation
 
-1. On Ubuntu, install `portaudio` for the voice recognition to work
+1. On Ubuntu, install `portaudio` and `tkinter` for the voice recognition & UI to work
 
 ```bash
 sudo apt install portaudio19-dev -y
+sudo apt install python3-tk -y
 ```
 
 2. Create a Python 3.10 environment (conda, venv, or other)
@@ -30,3 +31,36 @@ Source the python environment then
 ```bash
 python src/main.py
 ```
+
+## How to use
+
+1. Click on your position on the map
+2. The system will ask you where you want to go and wait for your answer
+3. Say where you wish to go.
+4. A red line will be drawn from your position to the destination by taking the shortest path possible
+
+The possible destinations are : 
+- The school
+- The university
+- The library
+- The cinema
+- The bus station
+- The train
+- The mall
+- The Post office
+- The park
+- Home
+
+## Examples
+
+### Example 1 : Bus Station
+```
+Voice input : I want to go to the bus station
+```
+![Alt text](assets/example_bus.png)
+
+### Example 2 : Home
+```
+Voice input : I want to go to Home
+```
+![Alt text](assets/example_home.png)
